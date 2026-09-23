@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { client } from "@/config/client";
 import { services } from "@/data/services";
 import { whatsappHref } from "@/lib/links";
+import { asset } from "@/lib/basePath";
 import {
   clean, cooldownRemaining, displayPhone, looksLikeBot, normalisePhone, patterns, startCooldown, todayISO,
 } from "@/lib/validation";
@@ -245,7 +246,7 @@ export function AppointmentForm() {
           />
           <span className="text-mist">
             I agree that {client.name} may contact me by WhatsApp or phone about this request, as described in the{" "}
-            <a href="/privacy-policy" className="text-brand underline" target="_blank" rel="noopener">Privacy Policy</a>. <span className="req" aria-hidden="true">*</span>
+            <a href={asset("/privacy-policy")} className="text-brand underline" target="_blank" rel="noopener">Privacy Policy</a>. <span className="req" aria-hidden="true">*</span>
           </span>
         </label>
         {errors.consent && <p id="consent-error" className="error" role="alert">{errors.consent}</p>}

@@ -11,7 +11,7 @@ import { ConsentManager } from "@/components/ConsentManager";
 import { ParallaxManager } from "@/components/ParallaxManager";
 import { SvgDefs } from "@/components/visuals/Mechanical";
 import { JsonLd } from "@/components/JsonLd";
-import { businessSchema, websiteSchema } from "@/lib/seo";
+import { absUrl, businessSchema, websiteSchema } from "@/lib/seo";
 import { offerBannerBootScript } from "@/lib/boot";
 
 const barlow = Barlow_Condensed({ subsets: ["latin"], weight: ["600", "700", "800"], variable: "--font-barlow", display: "swap" });
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: client.name,
     locale: client.seo.locale,
-    images: [{ url: client.seo.ogImage, width: 1200, height: 630 }],
+    images: [{ url: absUrl(client.seo.ogImage), width: 1200, height: 630 }],
   },
   twitter: { card: "summary_large_image" },
 };

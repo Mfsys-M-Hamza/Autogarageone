@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { client } from "./src/config/client";
+import { redirects } from "./src/config/redirects";
 
 const isDev = process.env.NODE_ENV !== "production";
 const analytics = Boolean(client.analytics.ga4Id);
@@ -34,36 +35,38 @@ const securityHeaders = [
   { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
 ];
 
+/**
+ * GitHub Pages build (STATIC_EXPORT=true, set by .github/workflows/deploy-pages.yml):
+ * plain HTML export served from a sub-path. Static hosts can't send headers or
+ * redirects, so those are only configured for server hosts (Vercel / Node).
+ */
+const staticExport = process.env.STATIC_EXPORT === "true";
+const basePath = (process.env.NEXT_PUBLIC_BASE_PATH || "").replace(/\/$/, "");
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   turbopack: { root: process.cwd() },
   poweredByHeader: false,
   compress: true,
-  images: { formats: ["image/avif", "image/webp"] },
-  async headers() {
-    return [
-      { source: "/(.*)", headers: securityHeaders },
-      { source: "/brand/(.*)", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
-    ];
-  },
-  /** Friendly/legacy URLs → canonical pages (301). Add old-site URLs here when migrating. */
-  async redirects() {
-    return [
-      { source: "/home", destination: "/", permanent: true },
-      { source: "/about-us", destination: "/about", permanent: true },
-      { source: "/contact-us", destination: "/contact", permanent: true },
-      { source: "/appointment", destination: "/book-appointment", permanent: true },
-      { source: "/book", destination: "/book-appointment", permanent: true },
-      { source: "/offers", destination: "/special-offers", permanent: true },
-      { source: "/offer", destination: "/special-offers", permanent: true },
-      { source: "/testimonials", destination: "/reviews", permanent: true },
-      { source: "/privacy", destination: "/privacy-policy", permanent: true },
-      { source: "/terms", destination: "/terms-and-conditions", permanent: true },
-      { source: "/services/computerized-vehicle-scanning", destination: "/services/computerized-scanning", permanent: true },
-      { source: "/services/ac-repair", destination: "/services/ac-heater-maintenance", permanent: true },
-      { source: "/services/brakes", destination: "/services/brake-service", permanent: true },
-    ];
-  },
+  ...(staticExport
+    ? {
+        output: "export",
+        basePath: basePath || undefined,
+        // No image server on static hosting; images are already optimised WebP.
+        images: { unoptimized: true },
+      }
+    : {
+        images: { formats: ["image/avif", "image/webp"] },
+        async headers() {
+          return [
+            { source: "/(.*)", headers: securityHeaders },
+            { source: "/brand/(.*)", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
+          ];
+        },
+        async redirects() {
+          return redirects.map((r) => ({ ...r, permanent: true }));
+        },
+      }),
 };
 
 export default nextConfig;

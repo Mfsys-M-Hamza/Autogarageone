@@ -16,7 +16,7 @@ export function pageMetadata(opts: {
   modifiedTime?: string;
   noindex?: boolean;
 }): Metadata {
-  const image = opts.image ?? client.seo.ogImage;
+  const image = absUrl(opts.image ?? client.seo.ogImage);
   const title = opts.title ?? client.seo.defaultTitle;
   return {
     title: opts.title ? opts.title : { absolute: client.seo.defaultTitle },

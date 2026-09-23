@@ -94,7 +94,28 @@ In `client.offer`:
 Set the environment variable **`NEXT_PUBLIC_SITE_URL`** (for example `https://www.autogarageone.pk`) before building.
 It is used for canonical URLs, the sitemap, Open Graph tags and structured data. See `.env.example`.
 
-### Vercel (recommended)
+### GitHub Pages (free static hosting, currently used)
+
+The workflow `.github/workflows/deploy-pages.yml` builds a static HTML export and publishes it on every push to `main`.
+
+1. **One-time setup:** in the repo, go to **Settings → Pages → Build and deployment → Source** and choose **GitHub Actions**.
+2. Push to `main`, or open **Actions → Deploy to GitHub Pages → Run workflow**.
+3. The site is served at `https://<owner>.github.io/<repo>/`. The workflow sets the sub-path (`NEXT_PUBLIC_BASE_PATH`) and the site URL automatically.
+
+**Custom domain on GitHub Pages:**
+- Add the domain under Settings → Pages.
+- Under Settings → Secrets and variables → Actions → **Variables**, add `BASE_PATH` = `/` and `SITE_URL` = `https://your-domain`.
+- Re-run the workflow.
+
+**Static-hosting limits:** GitHub Pages cannot send HTTP headers, so the security headers (CSP, HSTS and others) are not applied there.
+Legacy-URL redirects become small HTML forwarding pages (see `scripts/static-redirects.mjs`) instead of real 301s.
+For full headers and real redirects, deploy to Vercel or a Node host (below).
+
+To test the Pages build locally, run in bash:
+`STATIC_EXPORT=true NEXT_PUBLIC_BASE_PATH=/Autogargareone npx next build && node scripts/static-redirects.mjs`.
+The output is in `out/`. On Windows Git Bash, prefix the command with `MSYS_NO_PATHCONV=1`.
+
+### Vercel (recommended for full features)
 
 1. Push the repository to GitHub/GitLab.
 2. Import it at vercel.com → framework preset "Next.js" (auto-detected).

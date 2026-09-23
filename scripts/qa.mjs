@@ -19,6 +19,8 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const axeSource = readFileSync(require.resolve("axe-core/axe.min.js"), "utf8");
 const BASE = (process.argv[2] || "http://localhost:3000").replace(/\/$/, "");
+// Sub-path for static-export builds, e.g. QA_BASE_PATH=/Autogargareone
+const BP = (process.env.QA_BASE_PATH || "").replace(/\/$/, "");
 const CHROME = process.env.CHROME_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe";
 const SHOTS = process.env.QA_SHOTS || "qa-screenshots";
 mkdirSync(SHOTS, { recursive: true });
@@ -28,15 +30,15 @@ const fail = (msg) => { report.failures.push(msg); console.log("  ✗", msg); };
 const pass = (msg) => { report.checks.push(msg); console.log("  ✓", msg); };
 
 // ---------------------------------------------------------------- Sitemap
-const sm = await (await fetch(`${BASE}/sitemap.xml`)).text();
+const sm = await (await fetch(`${BASE}${BP}/sitemap.xml`)).text();
 const urls = [...sm.matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
 pass(`sitemap.xml lists ${urls.length} URLs`);
-const robots = await (await fetch(`${BASE}/robots.txt`)).text();
+const robots = await (await fetch(`${BASE}${BP}/robots.txt`)).text();
 robots.includes("Sitemap:") ? pass("robots.txt references the sitemap") : fail("robots.txt missing sitemap");
 
 // ---------------------------------------------------------------- Headers
 {
-  const r = await fetch(`${BASE}/`);
+  const r = await fetch(`${BASE}${BP}/`);
   for (const h of ["content-security-policy", "strict-transport-security", "x-content-type-options", "x-frame-options", "referrer-policy", "permissions-policy"]) {
     r.headers.get(h) ? pass(`header ${h}`) : fail(`missing header ${h}`);
   }
@@ -50,9 +52,9 @@ for (const [from, to] of [["/appointment", "/book-appointment"], ["/about-us", "
   r.status === 308 || r.status === 301 ? (loc.endsWith(to) ? pass(`redirect ${from} → ${to} (${r.status})`) : fail(`redirect ${from} went to ${loc}`)) : fail(`no redirect for ${from} (${r.status})`);
 }
 {
-  const r = await fetch(`${BASE}/this-page-does-not-exist`);
+  const r = await fetch(`${BASE}${BP}/this-page-does-not-exist`);
   r.status === 404 ? pass("unknown URL returns 404 with custom page") : fail(`unknown URL returned ${r.status}`);
-  const r2 = await fetch(`${BASE}/services/not-a-service`);
+  const r2 = await fetch(`${BASE}${BP}/services/not-a-service`);
   r2.status === 404 ? pass("unknown service slug returns 404") : fail(`unknown service slug returned ${r2.status}`);
 }
 
@@ -171,7 +173,7 @@ report.externalLinks = [...externalLinks];
     window.__opened = [];
     window.open = (u) => { window.__opened.push(String(u)); return { opener: null }; };
   });
-  await page.goto(`${BASE}/book-appointment?service=hybrid-car-repair`, { waitUntil: "networkidle0" });
+  await page.goto(`${BASE}${BP}/book-appointment?service=hybrid-car-repair`, { waitUntil: "networkidle0" });
   const pre = await page.$eval("#service", (s) => s.value);
   pre === "hybrid-car-repair" ? pass("?service= preselects the service") : fail(`service preselect got "${pre}"`);
 
@@ -249,7 +251,7 @@ report.externalLinks = [...externalLinks];
 {
   const page = await browser.newPage();
   await page.evaluateOnNewDocument(() => { window.__opened = []; window.open = (u) => { window.__opened.push(u); return null; }; });
-  await page.goto(`${BASE}/contact`, { waitUntil: "networkidle0" });
+  await page.goto(`${BASE}${BP}/contact`, { waitUntil: "networkidle0" });
   await page.type("#name", "Spam Bot"); await page.type("#mobile", "03001234567"); await page.type("#message", "Buy cheap things now!!!");
   await page.click("#consent");
   await page.click('button[type="submit"]'); // faster than 3s → time trap
@@ -263,7 +265,7 @@ report.externalLinks = [...externalLinks];
 {
   const page = await browser.newPage();
   await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
-  await page.goto(`${BASE}/`, { waitUntil: "networkidle0" });
+  await page.goto(`${BASE}${BP}/`, { waitUntil: "networkidle0" });
   await page.click('button[aria-controls="mobile-menu"]');
   await new Promise((r) => setTimeout(r, 200));
   const st = await page.evaluate(() => ({
@@ -288,7 +290,7 @@ report.externalLinks = [...externalLinks];
 {
   const page = await browser.newPage();
   await page.setViewport({ width: 1366, height: 900 });
-  await page.goto(`${BASE}/`, { waitUntil: "networkidle0" });
+  await page.goto(`${BASE}${BP}/`, { waitUntil: "networkidle0" });
   const before = await page.evaluate(() => !!document.querySelector("canvas")); // checked before any interaction
   await page.keyboard.press("Tab");
   const skip = await page.evaluate(() => document.activeElement?.textContent);
@@ -305,7 +307,7 @@ report.externalLinks = [...externalLinks];
   const page = await browser.newPage();
   await page.setViewport({ width: 1366, height: 900 });
   await page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "reduce" }]);
-  await page.goto(`${BASE}/`, { waitUntil: "networkidle0" });
+  await page.goto(`${BASE}${BP}/`, { waitUntil: "networkidle0" });
   const rm = await page.evaluate(() => {
     const hidden = [...document.querySelectorAll(".reveal")].filter((e) => getComputedStyle(e).opacity !== "1").length;
     const anim = [...document.querySelectorAll(".a-spin")].map((e) => parseFloat(getComputedStyle(e).animationDuration)).every((d) => d < 0.01);
@@ -317,7 +319,7 @@ report.externalLinks = [...externalLinks];
   const p2 = await browser.newPage();
   await p2.setViewport({ width: 1366, height: 900 });
   await p2.evaluateOnNewDocument(() => { HTMLCanvasElement.prototype.getContext = () => null; });
-  await p2.goto(`${BASE}/`, { waitUntil: "networkidle0" });
+  await p2.goto(`${BASE}${BP}/`, { waitUntil: "networkidle0" });
   await p2.mouse.move(400, 300);
   await new Promise((r) => setTimeout(r, 3000));
   const fb = await p2.evaluate(() => !document.querySelector("canvas") && !!document.querySelector("[data-anim] svg"));

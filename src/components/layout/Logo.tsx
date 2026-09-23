@@ -1,13 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { client } from "@/config/client";
+import { asset } from "@/lib/basePath";
 
 /** Brand logo — always rendered at its intrinsic aspect ratio. */
 export function Logo({ size = 56, priority = false, linked = true }: { size?: number; priority?: boolean; linked?: boolean }) {
   const width = Math.round((size * client.logo.width) / client.logo.height);
   const img = (
     <Image
-      src={client.logo.src}
+      src={asset(client.logo.src)}
       alt={linked ? `${client.name} — home` : client.logo.alt}
       width={width}
       height={size}

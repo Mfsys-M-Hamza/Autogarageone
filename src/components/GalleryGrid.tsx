@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { GalleryItem } from "@/data/content";
+import { asset } from "@/lib/basePath";
 import { MechanicalArt } from "@/components/visuals/Mechanical";
 import { Animated } from "@/components/visuals/Animated";
 import { ChevronIcon, CloseIcon } from "@/components/Icons";
@@ -13,7 +14,7 @@ function Media({ item, large = false }: { item: GalleryItem; large?: boolean }) 
   if (item.src && item.width && item.height) {
     return (
       <Image
-        src={item.src}
+        src={asset(item.src)}
         alt={item.alt}
         width={item.width}
         height={item.height}
