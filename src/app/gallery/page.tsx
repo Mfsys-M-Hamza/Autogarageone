@@ -1,0 +1,40 @@
+import type { Metadata } from "next";
+import { galleryItems } from "@/data/content";
+import { pageMetadata } from "@/lib/seo";
+import { PageHero } from "@/components/ui/PageHero";
+import { GalleryGrid } from "@/components/GalleryGrid";
+import { CtaBand } from "@/components/ui/CtaBand";
+
+export const metadata: Metadata = pageMetadata({
+  title: "Workshop Gallery — Diagnostics, Repairs & Maintenance",
+  description:
+    "Gallery of Auto Garage One's car workshop in B-17 Islamabad: diagnostic equipment, repair work and maintenance. Filter by category and view full screen.",
+  path: "/gallery",
+});
+
+export default function GalleryPage() {
+  const onlyIllustrations = galleryItems.every((g) => g.illustration);
+  return (
+    <>
+      <PageHero
+        crumbs={[{ name: "Gallery", path: "/gallery" }]}
+        eyebrow="Gallery"
+        title={<>Workshop <span className="green-text">gallery</span></>}
+        intro={<p>A look at the work we do — diagnostics, repairs and maintenance at our B-17 workshop.</p>}
+        visual="brake"
+      />
+      <section className="section pt-12" aria-label="Gallery">
+        <div className="container-x">
+          {onlyIllustrations && (
+            <p className="mb-8 rounded-2xl border border-white/10 bg-white/[.03] p-4 text-sm text-mist">
+              <strong className="text-white">Please note:</strong> the images below are illustrations of the services we offer, not photographs of our
+              premises or customer vehicles. Authentic workshop photographs will be added soon.
+            </p>
+          )}
+          <GalleryGrid items={galleryItems} />
+        </div>
+      </section>
+      <CtaBand />
+    </>
+  );
+}
