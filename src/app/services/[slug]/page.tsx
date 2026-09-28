@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { client } from "@/config/client";
 import { getService, relatedServices, services } from "@/data/services";
 import { posts } from "@/data/blog";
+import { galleryItems, type GalleryItem } from "@/data/content";
+import { asset } from "@/lib/basePath";
 import { pageMetadata, serviceSchema } from "@/lib/seo";
 import { serviceInquiryMessage, whatsappHref } from "@/lib/links";
 import { JsonLd } from "@/components/JsonLd";
@@ -13,10 +16,20 @@ import { ServiceCard } from "@/components/ui/ServiceCard";
 import { CtaBand } from "@/components/ui/CtaBand";
 import { Animated } from "@/components/visuals/Animated";
 import { MechanicalArt } from "@/components/visuals/Mechanical";
+import { LoopVideo } from "@/components/visuals/LoopVideo";
 import { AlertIcon, CalendarIcon, CheckCircleIcon, CheckIcon, PhoneIcon, WhatsAppIcon } from "@/components/Icons";
 import { telHref } from "@/lib/links";
 
 type Props = { params: Promise<{ slug: string }> };
+
+/** Real workshop photo or looping clip linked to this service (galleryItems[].service). */
+function ServiceMedia({ item, className, sizes }: { item: GalleryItem; className: string; sizes: string }) {
+  return item.video ? (
+    <LoopVideo src={item.video} poster={item.src!} label={item.alt} className={className} />
+  ) : (
+    <Image src={asset(item.src!)} alt={item.alt} width={item.width} height={item.height} sizes={sizes} className={className} />
+  );
+}
 
 export const dynamicParams = false;
 
@@ -37,6 +50,7 @@ export default async function ServicePage({ params }: Props) {
   const articles = posts.filter((p) => p.relatedServices.includes(s.slug)).slice(0, 3);
   const bookHref = `/book-appointment?service=${s.slug}`;
   const waHref = whatsappHref(serviceInquiryMessage(s.name));
+  const media = galleryItems.filter((g) => g.service === s.slug && g.src && g.width && g.height);
 
   return (
     <>
@@ -60,6 +74,21 @@ export default async function ServicePage({ params }: Props) {
             <h2 id="what-title" className="text-3xl font-extrabold uppercase text-white sm:text-4xl">About {s.name}</h2>
             <div className="prose-garage mt-4">{s.intro.map((p) => <p key={p}>{p}</p>)}</div>
           </section>
+
+          {media.length > 1 && (
+            <section aria-labelledby="workshop-title" className="reveal mt-12">
+              <h2 id="workshop-title" className="text-3xl font-extrabold uppercase text-white">In our <span className="green-text">workshop</span></h2>
+              <div className="mt-6 grid gap-5 sm:grid-cols-2">
+                {media.slice(1).map((m) => (
+                  <figure key={m.id} className="card relative overflow-hidden">
+                    <ServiceMedia item={m} className="aspect-[4/5] w-full object-cover" sizes="(min-width: 640px) 33vw, 100vw" />
+                    <figcaption className="absolute bottom-3 left-3 right-3 rounded-lg bg-black/65 px-3 py-1.5 text-sm font-semibold text-white backdrop-blur-sm">{m.title}</figcaption>
+                  </figure>
+                ))}
+              </div>
+              <Link href="/gallery" className="mt-4 inline-flex items-center gap-1 font-semibold text-brand hover:underline">See more in our gallery</Link>
+            </section>
+          )}
 
           <div className="mt-12 grid gap-5 md:grid-cols-2">
             <section aria-labelledby="signs-title" className="reveal card p-6">
@@ -122,9 +151,13 @@ export default async function ServicePage({ params }: Props) {
         {/* Sticky booking sidebar */}
         <aside className="lg:sticky lg:top-24 lg:self-start" aria-label={`Book ${s.shortName}`}>
           <div className="card overflow-hidden">
-            <Animated className="relative h-48 bg-[radial-gradient(circle_at_50%_60%,rgb(61_220_74/.18),transparent_70%)]">
-              <MechanicalArt kind={s.visual} className="absolute inset-0 m-auto h-40 w-40" />
-            </Animated>
+            {media[0] ? (
+              <ServiceMedia item={media[0]} className="h-56 w-full object-cover" sizes="360px" />
+            ) : (
+              <Animated className="relative h-48 bg-[radial-gradient(circle_at_50%_60%,rgb(61_220_74/.18),transparent_70%)]">
+                <MechanicalArt kind={s.visual} className="absolute inset-0 m-auto h-40 w-40" />
+              </Animated>
+            )}
             <div className="p-6">
               <h2 className="text-2xl font-bold uppercase text-white">Book {s.shortName}</h2>
               <p className="mt-2 text-sm text-mist">Your requested time will be confirmed by our team through WhatsApp or telephone.</p>
