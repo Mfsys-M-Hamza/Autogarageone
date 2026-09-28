@@ -13,6 +13,8 @@ export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [panelTop, setPanelTop] = useState(72);
+  const headerRef = useRef<HTMLElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
 
@@ -30,6 +32,8 @@ export function Header() {
   useEffect(() => {
     if (!open) return;
     const panel = panelRef.current;
+    // Start the panel under the header, which sits lower while the offer banner is visible
+    setPanelTop(headerRef.current?.getBoundingClientRect().bottom ?? 72);
     document.body.style.overflow = "hidden";
     const focusables = () => Array.from(panel?.querySelectorAll<HTMLElement>("a,button") ?? []);
     focusables()[0]?.focus();
@@ -56,56 +60,60 @@ export function Header() {
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   return (
-    <header
-      className={`sticky top-0 z-50 transition-[background-color,box-shadow,border-color] duration-300 border-b ${
-        scrolled || open ? "bg-[#0b0d0c]/92 backdrop-blur-lg border-white/8 shadow-[0_10px_30px_-12px_rgba(0,0,0,.8)]" : "bg-[#0b0d0c]/60 backdrop-blur-sm border-transparent"
-      }`}
-    >
-      <div className="container-x flex h-[72px] items-center justify-between gap-4">
-        <Logo size={56} priority />
+    <>
+      <header
+        ref={headerRef}
+        className={`sticky top-0 z-50 transition-[background-color,box-shadow,border-color] duration-300 border-b ${
+          scrolled || open ? "bg-[#0b0d0c]/92 backdrop-blur-lg border-white/8 shadow-[0_10px_30px_-12px_rgba(0,0,0,.8)]" : "bg-[#0b0d0c]/60 backdrop-blur-sm border-transparent"
+        }`}
+      >
+        <div className="container-x flex h-[72px] items-center justify-between gap-4">
+          <Logo size={56} priority />
 
-        <nav aria-label="Main" className="hidden lg:block">
-          <ul className="flex items-center gap-1">
-            {mainNav.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  aria-current={isActive(item.href) ? "page" : undefined}
-                  className={`relative rounded-lg px-3 py-2 text-[.95rem] font-semibold transition-colors hover:text-brand-bright ${
-                    isActive(item.href) ? "text-brand" : "text-mist"
-                  } after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:rounded after:bg-brand after:transition-transform after:origin-left ${
-                    isActive(item.href) ? "after:scale-x-100" : "after:scale-x-0 hover:after:scale-x-100"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+          <nav aria-label="Main" className="hidden lg:block">
+            <ul className="flex items-center gap-1">
+              {mainNav.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    aria-current={isActive(item.href) ? "page" : undefined}
+                    className={`relative rounded-lg px-3 py-2 text-[.95rem] font-semibold transition-colors hover:text-brand-bright ${
+                      isActive(item.href) ? "text-brand" : "text-mist"
+                    } after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:rounded after:bg-brand after:transition-transform after:origin-left ${
+                      isActive(item.href) ? "after:scale-x-100" : "after:scale-x-0 hover:after:scale-x-100"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-        <div className="flex items-center gap-2">
-          <a href={telHref} className="btn btn-outline btn-sm hidden xl:inline-flex" aria-label={`Call ${client.phone.display}`}>
-            <PhoneIcon width={16} height={16} /> {client.phone.display}
-          </a>
-          <Link href="/book-appointment" className="btn btn-primary btn-sm hidden sm:inline-flex">
-            <CalendarIcon width={16} height={16} /> Book Appointment
-          </Link>
-          <button
-            ref={toggleRef}
-            type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 text-white lg:hidden"
-            aria-expanded={open}
-            aria-controls="mobile-menu"
-            aria-label={open ? "Close menu" : "Open menu"}
-            onClick={() => setOpen((o) => !o)}
-          >
-            {open ? <CloseIcon width={22} height={22} /> : <MenuIcon width={22} height={22} />}
-          </button>
+          <div className="flex items-center gap-2">
+            <a href={telHref} className="btn btn-outline btn-sm hidden xl:inline-flex" aria-label={`Call ${client.phone.display}`}>
+              <PhoneIcon width={16} height={16} /> {client.phone.display}
+            </a>
+            <Link href="/book-appointment" className="btn btn-primary btn-sm hidden sm:inline-flex">
+              <CalendarIcon width={16} height={16} /> Book Appointment
+            </Link>
+            <button
+              ref={toggleRef}
+              type="button"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 text-white lg:hidden"
+              aria-expanded={open}
+              aria-controls="mobile-menu"
+              aria-label={open ? "Close menu" : "Open menu"}
+              onClick={() => setOpen((o) => !o)}
+            >
+              {open ? <CloseIcon width={22} height={22} /> : <MenuIcon width={22} height={22} />}
+            </button>
+          </div>
         </div>
-      </div>
+      </header>
 
-      {/* Mobile menu */}
+      {/* Mobile menu. Rendered outside <header>: its backdrop-filter would otherwise become the
+          containing block for this fixed panel and collapse it to zero height. */}
       <div
         id="mobile-menu"
         ref={panelRef}
@@ -113,7 +121,8 @@ export function Header() {
         aria-modal="true"
         aria-label="Site menu"
         hidden={!open}
-        className="lg:hidden fixed inset-x-0 top-[72px] bottom-0 z-50 overflow-y-auto bg-[#0b0d0c] carbon"
+        style={{ top: panelTop }}
+        className="lg:hidden fixed inset-x-0 bottom-0 z-50 overflow-y-auto bg-[#0b0d0c] carbon"
       >
         <nav aria-label="Mobile" className="container-x py-6">
           <ul className="grid gap-1">
@@ -149,6 +158,6 @@ export function Header() {
           </div>
         </nav>
       </div>
-    </header>
+    </>
   );
 }
