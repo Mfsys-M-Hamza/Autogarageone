@@ -1,9 +1,11 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import { client } from "@/config/client";
 import { featuredServices, services } from "@/data/services";
 import { homeFaqs, processSteps, stats, whyChooseUs } from "@/data/content";
 import { pageMetadata } from "@/lib/seo";
+import { asset } from "@/lib/basePath";
 import { Hero3D } from "@/components/hero/Hero3D";
 import { ContactButtons } from "@/components/ui/ContactButtons";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -15,6 +17,7 @@ import { ReviewsBlock } from "@/components/sections/ReviewsBlock";
 import { ServiceArea } from "@/components/sections/ServiceArea";
 import { Animated } from "@/components/visuals/Animated";
 import { MechanicalArt } from "@/components/visuals/Mechanical";
+import { LoopVideo } from "@/components/visuals/LoopVideo";
 import { ArrowRightIcon, ShieldIcon } from "@/components/Icons";
 
 export const metadata: Metadata = pageMetadata({
@@ -147,6 +150,43 @@ export default function HomePage() {
               </div>
             ))}
           </dl>
+        </div>
+      </section>
+
+      {/* -------------------------------------------------------- Workshop */}
+      <section className="section" aria-labelledby="workshop-title">
+        <div className="container-x">
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <SectionHeading
+              id="workshop-title"
+              eyebrow="Inside the workshop"
+              title={<>Real tools. <span className="green-text">Real workshop.</span></>}
+              intro="Find us in NH Arcade, Multi Gardens B-17 — equipped with a LAUNCH injector cleaning machine, a full tool wall and quality oils in stock."
+            />
+            <Link href="/gallery" className="reveal btn btn-outline shrink-0">View gallery <ArrowRightIcon width={18} height={18} /></Link>
+          </div>
+          <div className="mt-12 grid gap-5 lg:grid-cols-3">
+            <figure className="reveal card relative overflow-hidden lg:col-span-2">
+              <Image
+                src={asset("/media/shopfront.webp")}
+                alt="Auto Garage One shop front in NH Arcade, Multi Gardens B-17, with customer cars parked outside"
+                width={1280}
+                height={838}
+                sizes="(min-width: 1024px) 66vw, 100vw"
+                className="aspect-[16/10] h-full w-full object-cover"
+              />
+              <figcaption className="absolute bottom-3 left-3 rounded-lg bg-black/65 px-3 py-1.5 text-sm font-semibold text-white backdrop-blur-sm">Our shop front, B-17 Islamabad</figcaption>
+            </figure>
+            <figure className="reveal card relative overflow-hidden" style={{ ["--d" as string]: "120ms" }}>
+              <LoopVideo
+                src="/media/injector-cleaner-2.mp4"
+                poster="/media/injector-cleaner-2-poster.webp"
+                label="LAUNCH CNC-605A fuel injector cleaner and tester in the workshop"
+                className="aspect-[4/5] w-full object-cover lg:absolute lg:inset-0 lg:aspect-auto lg:h-full"
+              />
+              <figcaption className="absolute bottom-3 left-3 rounded-lg bg-black/65 px-3 py-1.5 text-sm font-semibold text-white backdrop-blur-sm">LAUNCH injector cleaner &amp; tester</figcaption>
+            </figure>
+          </div>
         </div>
       </section>
 

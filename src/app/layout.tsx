@@ -35,6 +35,7 @@ export const metadata: Metadata = {
     images: [{ url: absUrl(client.seo.ogImage), width: 1200, height: 630 }],
   },
   twitter: { card: "summary_large_image" },
+  verification: { google: client.seo.googleSiteVerification },
 };
 
 export const viewport: Viewport = {

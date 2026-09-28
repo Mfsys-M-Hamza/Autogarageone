@@ -40,6 +40,9 @@ export const MenuIcon = (p: P) => (
 export const CloseIcon = (p: P) => (
   <svg {...base(p)} {...stroke}><path d="M18 6 6 18M6 6l12 12" /></svg>
 );
+export const PlayIcon = (p: P) => (
+  <svg {...base(p)} fill="currentColor"><path d="M8 5.1v13.8a1 1 0 0 0 1.5.9l11-6.9a1 1 0 0 0 0-1.7l-11-6.9A1 1 0 0 0 8 5.1z" /></svg>
+);
 export const PlusIcon = (p: P) => (
   <svg {...base(p)} {...stroke}><path d="M12 5v14M5 12h14" /></svg>
 );

@@ -52,7 +52,7 @@ export const processSteps = [
 export const stats = [
   { value: "2026", label: "Established in B-17" },
   { value: "16", label: "Specialist services" },
-  { value: "2", label: "Cities served" },
+  { value: "4.8★", label: "Google rating (6 reviews)" },
   { value: "Free", label: "Scan until Dec 2026" },
 ];
 
@@ -104,6 +104,7 @@ export const reviews: Review[] = [
   },
   {
     name: "Muzammal Abbas",
+    rating: 4,
     text: "Car Care service digital Auto Garage One",
     date: "2026-06",
     source: "Google",
@@ -111,10 +112,11 @@ export const reviews: Review[] = [
 ];
 
 /**
- * Gallery. Until authentic photos are supplied, entries use the site's own
- * illustrations and are clearly captioned as illustrations.
- * To add a real photo: put an optimised .webp in /public/gallery and set `src`,
- * `width`, `height` and set `illustration: false`.
+ * Gallery. Authentic workshop photos and videos come first; the remaining entries
+ * use the site's own illustrations and are clearly captioned as illustrations.
+ * To add media: drop the original in assets/media, run `npm run media`, then add an
+ * entry with `src` (photo, or the video's poster), `width`, `height` and, for a
+ * video, `video`. `visual` is only the fallback when there is no `src`.
  */
 export type GalleryItem = {
   id: string;
@@ -124,11 +126,20 @@ export type GalleryItem = {
   visual: VisualKey;
   illustration: boolean;
   src?: string;
+  video?: string;
   width?: number;
   height?: number;
 };
 
 export const galleryItems: GalleryItem[] = [
+  { id: "p1", category: "Workshop", title: "Our workshop in B-17", alt: "Auto Garage One shop front in NH Arcade, Multi Gardens B-17, with customer cars parked outside", visual: "gear", illustration: false, src: "/media/shopfront.webp", width: 1280, height: 838 },
+  { id: "v3", category: "Diagnostics", title: "LAUNCH CNC-605A injector tester", alt: "LAUNCH CNC-605A fuel injector cleaner and tester on the workshop bench", visual: "injector", illustration: false, src: "/media/injector-cleaner-2-poster.webp", video: "/media/injector-cleaner-2.mp4", width: 720, height: 1280 },
+  { id: "p2", category: "Workshop", title: "Tools & lubricants wall", alt: "Workbench with a pegboard of hand tools and shelves of engine oils", visual: "gear", illustration: false, src: "/media/workshop-wall.webp", width: 1280, height: 720 },
+  { id: "v2", category: "Repairs", title: "Ultrasonic injector cleaning", alt: "Close-up of the ultrasonic cleaning bath and control panel of the injector cleaning machine", visual: "injector", illustration: false, src: "/media/injector-cleaner-poster.webp", video: "/media/injector-cleaner.mp4", width: 478, height: 850 },
+  { id: "v4", category: "Workshop", title: "Engine oils & fluids in stock", alt: "Shelves stocked with engine oils, coolants and other fluids", visual: "engine", illustration: false, src: "/media/lubricants-poster.webp", video: "/media/lubricants.mp4", width: 478, height: 850 },
+  { id: "v1", category: "Workshop", title: "Hand tools, ready for the job", alt: "Pegboard of spanners, pliers and hammers above a bench grinder", visual: "gear", illustration: false, src: "/media/tool-wall-poster.webp", video: "/media/tool-wall.mp4", width: 478, height: 850 },
+  { id: "v0", category: "Workshop", title: "Our illuminated sign", alt: "Round illuminated Auto Garage One logo sign on the workshop wall", visual: "gear", illustration: false, src: "/media/logo-sign-poster.webp", video: "/media/logo-sign.mp4", width: 478, height: 850 },
+  { id: "p3", category: "Workshop", title: "Scan or tap to review us", alt: "Counter stand with a QR code and NFC tag for leaving a Google review", visual: "gear", illustration: false, src: "/media/google-review-stand.webp", width: 720, height: 1280 },
   { id: "g1", category: "Diagnostics", title: "Computerized OBD scanning", alt: "Illustration of a diagnostic scanner showing live engine data", visual: "scanner", illustration: true },
   { id: "g2", category: "Diagnostics", title: "Electrical fault tracing", alt: "Illustration of an electrical circuit being tested", visual: "electrical", illustration: true },
   { id: "g3", category: "Workshop", title: "Engine bay work", alt: "Illustration of a car engine with moving pistons", visual: "engine", illustration: true },

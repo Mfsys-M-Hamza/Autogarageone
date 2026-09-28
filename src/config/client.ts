@@ -54,11 +54,11 @@ export const client = {
   email: "",
 
   address: {
-    street: "NH Arcade, Street No. 10, Block C",
+    street: "Shop # 16, NH Arcade, Street No. 10, Block C",
     area: "Multi Gardens B-17",
     city: "Islamabad",
     region: "Islamabad Capital Territory",
-    postalCode: "",
+    postalCode: "44100",
     country: "Pakistan",
     countryCode: "PK",
   },
@@ -67,26 +67,30 @@ export const client = {
    * Map coordinates. Approximate until confirmed — when `confirmed` is false the
    * coordinates are NOT published in structured data and the map uses the address search.
    */
-  geo: { lat: 33.6897, lng: 72.8205, confirmed: false },
+  /** Pin from the Google Business Profile listing (plus code MRGH+HF). */
+  geo: { lat: 33.6763994, lng: 72.8287333, confirmed: true },
 
-  /** Paste the Google Business Profile URL once the listing is live. */
-  googleBusinessProfileUrl: "",
-  /** Direct "write a review" link from Google Business Profile, when available. */
-  googleReviewUrl: "",
+  /** Google Business Profile (Maps listing, by cid). */
+  googleBusinessProfileUrl: "https://maps.google.com/?cid=17018982629340501133",
+  /**
+   * "Leave a review" link. Points at the Maps listing (which has a Write a review button);
+   * swap in the direct search.google.com/local/writereview?placeid=… link when available.
+   */
+  googleReviewUrl: "https://maps.google.com/?cid=17018982629340501133",
 
   /* ------------------------------------------------------------------ Hours */
   hours: {
-    /** Set to true only after the owner confirms these times. */
-    confirmed: false,
+    /** Set to true only after the owner confirms these times. Confirmed from Google Business Profile. */
+    confirmed: true,
     note: "Please call or WhatsApp before visiting — opening hours are being finalised.",
     days: [
-      { day: "Monday", schemaDay: "Monday", opens: "09:00", closes: "19:00" },
-      { day: "Tuesday", schemaDay: "Tuesday", opens: "09:00", closes: "19:00" },
-      { day: "Wednesday", schemaDay: "Wednesday", opens: "09:00", closes: "19:00" },
-      { day: "Thursday", schemaDay: "Thursday", opens: "09:00", closes: "19:00" },
-      { day: "Friday", schemaDay: "Friday", opens: "09:00", closes: "19:00" },
-      { day: "Saturday", schemaDay: "Saturday", opens: "09:00", closes: "19:00" },
-      { day: "Sunday", schemaDay: "Sunday", closed: true },
+      { day: "Monday", schemaDay: "Monday", opens: "09:00", closes: "21:00" },
+      { day: "Tuesday", schemaDay: "Tuesday", opens: "09:00", closes: "21:00" },
+      { day: "Wednesday", schemaDay: "Wednesday", opens: "09:00", closes: "21:00" },
+      { day: "Thursday", schemaDay: "Thursday", opens: "09:00", closes: "21:00" },
+      { day: "Friday", schemaDay: "Friday", closed: true },
+      { day: "Saturday", schemaDay: "Saturday", opens: "09:00", closes: "21:00" },
+      { day: "Sunday", schemaDay: "Sunday", opens: "09:00", closes: "21:00" },
     ] as DayHours[],
   },
 
@@ -148,6 +152,8 @@ export const client = {
 
   /* -------------------------------------------------------------------- SEO */
   seo: {
+    /** Google Search Console HTML-tag verification token (content of google-site-verification). */
+    googleSiteVerification: "7tz4tSc9JyO2Ftq5-bGPIgLEL8pq6T7bSlWHQtWTi3w",
     defaultTitle: "Auto Garage One | Car Repair Workshop in B-17 Islamabad",
     titleTemplate: "%s | Auto Garage One",
     defaultDescription:
@@ -188,14 +194,11 @@ export const client = {
  * Surfaced in CLIENT-CHECKLIST.md — keep the two in sync.
  */
 export const pendingConfirmation = [
-  "Opening hours (client.hours)",
-  "Exact map coordinates / Google Maps pin (client.geo)",
   "Business email address (client.email)",
-  "Google Business Profile and review links",
+  "Direct Google \"write a review\" link (client.googleReviewUrl currently opens the Maps listing)",
   "Whether emergency breakdown assistance is offered (services.ts → emergency-breakdown-assistance)",
   "Offer terms and eligibility (client.offer.terms)",
-  "Authentic workshop photographs for the gallery",
-  "Star rating for Muzammal Abbas review + Google review link",
+  "More workshop photographs (repairs in progress, before & after)",
   "Technician names, qualifications and experience (About page)",
   "Final domain name (client.siteUrl)",
 ] as const;

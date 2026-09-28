@@ -1,7 +1,9 @@
+import Image from "next/image";
 import type { Metadata } from "next";
 import { client } from "@/config/client";
 import { about } from "@/data/content";
 import { pageMetadata } from "@/lib/seo";
+import { asset } from "@/lib/basePath";
 import { PageHero } from "@/components/ui/PageHero";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ContactButtons } from "@/components/ui/ContactButtons";
@@ -40,11 +42,24 @@ export default function AboutPage() {
           </div>
           <div className="reveal relative">
             <div className="absolute inset-0 bg-[radial-gradient(circle,rgb(61_220_74/.12),transparent_65%)]" aria-hidden="true" />
-            <Animated className="relative mx-auto grid max-w-[440px] grid-cols-2 gap-4">
-              {(["engine", "scanner", "brake", "hybrid"] as VisualKey[]).map((k) => (
-                <div key={k} className="card p-4"><MechanicalArt kind={k} className="h-auto w-full" /></div>
-              ))}
-            </Animated>
+            <div className="relative grid gap-4">
+              <Image
+                src={asset("/media/shopfront.webp")}
+                alt="Auto Garage One shop front in NH Arcade, Multi Gardens B-17, with customer cars parked outside"
+                width={1280}
+                height={838}
+                sizes="(min-width: 1024px) 40vw, 100vw"
+                className="card h-auto w-full"
+              />
+              <Image
+                src={asset("/media/workshop-wall.webp")}
+                alt="Workbench with a pegboard of hand tools and shelves of engine oils inside the workshop"
+                width={1280}
+                height={720}
+                sizes="(min-width: 1024px) 40vw, 100vw"
+                className="card h-auto w-full"
+              />
+            </div>
           </div>
         </div>
       </section>
