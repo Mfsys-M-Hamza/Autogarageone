@@ -94,6 +94,10 @@ export function Footer() {
             ))}
           </ul>
         </div>
+        <p className="container-x border-t border-white/5 py-4 text-center text-xs text-metal">
+          Developed by <span className="font-semibold text-mist">WideWeb Technologies</span> · Contact:{" "}
+          <a href="tel:+923040500121" className="whitespace-nowrap hover:text-brand">+92 3040500121</a>
+        </p>
       </div>
     </footer>
   );
